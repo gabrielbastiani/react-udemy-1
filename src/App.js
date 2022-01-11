@@ -1,45 +1,39 @@
-import React, {Component} from "react";
+import React, {Component} from 'react';
 
 class App extends Component{
 
     constructor(props){
-        super(props);
-        this.state = {
-            nome: 'Gabriel',
-            contador: 0
-        };
+            super(props);
+            this.state = {
+                status: false
+         };
 
-        this.aumentar = this.aumentar.bind(this);
-        this.diminuir = this.diminuir.bind(this);
+         this.sair = this.sair.bind(this);
+         this.entrar = this.entrar.bind(this);
+        
     }
 
-    aumentar(){
-        let state = this.state;
-        if(state.contador === 0){
-            alert('Opa chegou a zero!');
-            return;
-        }
-        state.contador += 1;
-        state.nome = 'jose';
-        this.setState(state)
+    sair(){
+        this.setState({status: false});
     }
 
-    diminuir(){
-        let state = this.state;
-        state.contador -= 1;
-        this.setState(state)
+    entrar(){
+        this.setState({status: true});
     }
 
     render(){
         return(
             <div>
-                <h1>Contador</h1>
-                {this.state.nome}
-                <h3>
-                <button onClick={this.diminuir}>-</button>
-                    {this.state.contador}
-                <button onClick={this.aumentar}>+</button>
-                </h3>
+               {this.state.status ?
+               <div>
+                   <h2>Bem-Vindo ao sistema</h2>
+                   <button onClick={this.sair}>Sair</button>
+               </div> :
+               <div>
+                   <h2>Olá visitante, faça o login!</h2>
+                   <button onClick={this.entrar}>Entrar no Sistema</button>
+                </div>
+                }
             </div>
         );
     }
