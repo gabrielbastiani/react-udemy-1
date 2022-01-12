@@ -1,39 +1,50 @@
 import React, {Component} from 'react';
+import Feed from './components/Feed';
 
 class App extends Component{
 
     constructor(props){
-            super(props);
-            this.state = {
-                status: false
-         };
+        super(props);
+        this.state = {
+            nome: '',
+            email: '',
+            senha: '',
+            error: ''
+        };
 
-         this.sair = this.sair.bind(this);
-         this.entrar = this.entrar.bind(this);
-        
+        this.cadastrar = this.cadastrar.bind(this);
     }
 
-    sair(){
-        this.setState({status: false});
-    }
+    cadastrar(event){
+        const {nome, email, senha} = this.state;
 
-    entrar(){
-        this.setState({status: true});
+        if(nome !== '' && email !== '' && senha !== ''){
+            alert(`Nome: ${nome} \nEmail: ${email} \nSenha: ${senha}`);
+        } else {
+            this.setState({error: 'Ops! Parece que está faltando algo!!!'})
+        }
+
+        event.preventDefault();
     }
 
     render(){
         return(
             <div>
-               {this.state.status ?
-               <div>
-                   <h2>Bem-Vindo ao sistema</h2>
-                   <button onClick={this.sair}>Sair</button>
-               </div> :
-               <div>
-                   <h2>Olá visitante, faça o login!</h2>
-                   <button onClick={this.entrar}>Entrar no Sistema</button>
-                </div>
-                }
+              <h1>Novo usuario</h1>
+            {this.state.error && <p>{this.state.error}</p>}
+              <form onSubmit={this.cadastrar}>
+                  <label>Nome: </label>
+                  <input type="text" value={this.state.nome}
+                    onChange={(e)=> this.setState({nome: e.target.value})}/> <br/>
+                    <label>Email: </label>
+                <input type="email" value={this.state.email}
+                    onChange={(e)=> this.setState({email: e.target.value})}/> <br/>
+                     <label>Senha: </label>
+                <input type="password" value={this.state.senha}
+                    onChange={(e)=> this.setState({senha: e.target.value})}/>
+
+                    <button type="submit">Cadastrar</button>
+              </form>
             </div>
         );
     }
