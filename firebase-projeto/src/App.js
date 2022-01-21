@@ -1,151 +1,74 @@
-import { useState, useEffect } from 'react';
-import firebase from './firebaseConnection';
+
+import {useState} from 'react';
 import './style.css';
 
+import firebase from './firebaseConnection';
+
 function App() {
-  const [idPost, setIdPost] = useState('');
-  const [titulo, setTitulo] = useState('');
-  const [autor, setAutor] = useState('');
-  const [posts, setPosts] = useState([]);
 
-  useEffect(()=>{
-    async function loadPosts(){
-      await firebase.firestore().collection('posts')
-      .onSnapshot((doc)=>{
-        let meusPosts = [];
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [nome, setNome] = useState('');
 
-        doc.forEach((item)=>{
-          meusPosts.push({
-            id: item.id,
-            titulo: item.data().titulo,
-            autor: item.data().autor,
-          })
-        });
 
-        setPosts(meusPosts);
-
+  async function novoUsuario(){
+    await firebase.auth().createUserWithEmailAndPassword(email, senha)
+    .then( async (value)=>{
+      
+      await firebase.firestore().collection('users')
+      .doc(value.user.uid)
+      .set({
+        nome: nome,
+        cargo: cargo,
+        status: true,
       })
-    }
-
-    loadPosts();
-
-  })
-
-  async function handleAdd(){
-/*     await firebase.firestore().collection('posts')
-    .doc('12345')
-    .set({
-      titulo: titulo,
-      autor: autor
-    }) */
-
-    await firebase.firestore().collection('posts')
-    .add({
-      titulo: titulo,
-      autor: autor,
-    })
-    .then(()=>{
-      console.log('DADOS CADASTRADOS COM SUCESSO');
-      setTitulo('');
-      setAutor('');
-    })
-    .catch((error) => {
-      console.log('GEROU ALGUM ERRO: ' + error);
-    })
-  }
-
-  async function buscaPost(){
-/*     await firebase.firestore().collection('posts')
-    .doc('123')
-    .get()
-    .then((snapshot)=>{
-      setTitulo(snapshot.data().titulo);
-      setAutor(snapshot.data().autor);
-
-    })
-    .catch(()=>{
-      console.log('Deu Algum Erro');
-    }) */
-
-    await firebase.firestore().collection('posts')
-    .get()
-    .then((snapshot)=>{
-      let lista = [];
-
-      snapshot.forEach((doc)=>{
-        lista.push({
-          id: doc.id,
-          titulo: doc.data().titulo,
-          autor: doc.data().autor
-        })
+      .then(()=>{
+        setNome('');
+        setCargo('');
+        setEmail('');
+        setSenha('');
       })
 
-      setPosts(lista);
 
     })
-    .catch(()=>{
-      console.log('DEU ALGUM ERRO!');
+    .catch((error)=>{ 
+      if(error.code === 'auth/weak-password'){
+        alert('Senha muito fraca..')
+      }else if(error.code === 'auth/email-already-in-use'){
+        alert('Esse email já existe!');
+      }
+
     })
+
+
   }
 
-  async function editarPost(){
-    await firebase.firestore().collection('posts')
-    .doc(idPost)
-    .update({
-      titulo: titulo,
-      autor: autor
-    })
-    .then(()=>{
-      console.log('Dados atualizados com sucesso.');
-      setPosts('');
-      setTitulo('');
-      setAutor('');
-    })
-    .catch(()=>{
-      console.log('Erro ao Atualizar');
-    })
-  }
 
-  async function excluirPost(id){
-    await firebase.firestore().collection('posts').doc(id)
-    .delete()
-    .then(() => {
-      alert('Esse Post foi excluido');
-    })
+  async function logout(){
+    await firebase.auth().signOut();
   }
 
   return (
-    <div className="App">
-      <h1>ReactJs + Firebase :</h1> <br/>
+    <div>
+      <h1>ReactJS + Firebase :)</h1> <br/>
 
-    <div className='container'>
+    <div className="container">
+      <label>Nome</label>
+      <input type="text" value={nome} onChange={ (e) => setNome(e.target.value) } /> <br/>
 
-      <label>ID: </label>
-      <input type="text" value={idPost} onChange={ (e) => setIdPost(e.target.value)} />
+      <label>Cargo</label>
+      <input type="text" value={cargo} onChange={ (e) => setCargo(e.target.value) } /> <br/>
 
-      <label>Titulo</label>
-      <textarea type="text" value={titulo} onChange={ (e) => setTitulo(e.target.value)} />
+      <label>Email</label>
+      <input type="text" value={email} onChange={ (e) => setEmail(e.target.value) } /> <br/>
 
-      <label>Autor: </label>
-      <input type="text" value={autor} onChange={ (e) => setAutor(e.target.value)} /> <br/>
+      <label>Senha</label>
+      <input type="password" value={senha} onChange={ (e) => setSenha(e.target.value) } /> <br/> 
 
-      <button onClick={handleAdd}>Cadastrar</button> <br/>
-      <button onClick={buscaPost}>Busca Post</button> <br/>
-      <button onClick={editarPost}>Editar</button> <br/>
-
-      <ul>
-        {posts.map((post)=>{
-          return(
-            <li key={post.id}>
-              <span>ID - {post.id}</span> <br/>
-              <span>Titulo: {post.titulo} </span> <br/>
-              <span>Autor: {post.autor} </span> <br/>
-              <button onClick={ ()=> excluirPost(post.id) }>Excluir Post</button> <br/> <br/>
-            </li>
-          )
-        })}
-      </ul>
-      </div>
+      <button onClick={ novoUsuario }>Cadastrar</button>
+      <button onClick={ logout } >Sair da conta!</button> 
+    </div>
 
     </div>
   );
