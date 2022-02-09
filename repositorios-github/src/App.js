@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import Routes from "./routes";
+import Routes from './routes';
 import GlobalStyle from './styles/global';
 
 function App() {
@@ -13,6 +13,3 @@ function App() {
 }
 
 export default App;
-
-
-///////////  https://api.github.com/repos/facebook/react
