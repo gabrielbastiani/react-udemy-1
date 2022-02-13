@@ -12,7 +12,7 @@ export default function App() {
    <Provider store={store}>
     <BrowserRouter>
       <Header/>
-        <Routes/>
+      <Routes/>
     </BrowserRouter>
    </Provider>
  );
